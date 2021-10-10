@@ -4,16 +4,15 @@ import numpy as np
 import os
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
-train_data_location = os.path.join('.', 'train_data', 'train.yml')
-recognizer.read(train_data_location)
 face_xml_location = os.path.join('.', 'evn', 'lib', 'python3.9', 'site-packages', 'cv2', 'data','haarcascade_frontalface_alt2.xml')
 face_cascade = cv2.CascadeClassifier(face_xml_location)
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 
-def get_name(id):
+# 通过人脸编号获取到人脸姓名
+def get_name(filepath, id):
     # read from file
-    with open("data.json") as file:
+    with open(filepath) as file:
         info_list = json.load(file)
     return info_list[id]
 
@@ -42,7 +41,7 @@ def camera_face_recognize():
     cv2.waitKey(1)
 
 
-def photo_face_recognize(path):
+def photo_face_recognize(path, infopath):
     for image_path in os.listdir(path):
         # 忽略掉非.jpg文件
         if os.path.split(image_path)[-1].split(".")[-1] != 'jpg':
@@ -53,7 +52,7 @@ def photo_face_recognize(path):
         faces = face_cascade.detectMultiScale(grey, 1.2, 5)
         for (x, y, w, h) in faces:
             img_id, conf = recognizer.predict(grey[y:y + h, x:x + w])
-            str_out1 = 'name: ' + get_name(img_id)
+            str_out1 = 'name: ' + get_name(infopath, img_id)
             # str_out1 = 'name: JA'
             str_out2 = 'with conf: ' + str(round(conf, 2))
             cv2.putText(img, str_out1, (10, y + h), font, 1, (255, 255, 255)[::-1], 3)
@@ -62,6 +61,11 @@ def photo_face_recognize(path):
             cv2.imwrite(pic_save_location, img)
 
 
-if __name__ == '__main__':
-    photo_face_recognize('./recog_pic')
+# 人脸识别函数
+# face_recog_path：需要识别的图片文件文件夹路径
+# module_path：训练的识别模型文件夹路径
+def face_recog(face_recog_path='./recog_pic' ,module_path='./train_data'):
+    train_data_location = os.path.join(module_path, 'train.yml')
+    recognizer.read(train_data_location)
+    photo_face_recognize(face_recog_path, os.path.join(module_path, 'data.json'))
     exit(0)

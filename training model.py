@@ -54,17 +54,18 @@ def get_images_and_labels(path):
     return face_samples, ids, info_list
 
 
-train_data_location = os.path.join('.', 'train_data', 'train.yml')
-face_data_location = os.path.join('.', 'training_pic')
-imags_preprocess(face_data_location)
-faces, Ids, infos = get_images_and_labels(face_data_location)
-recognizer.train(faces, np.array(Ids))
-recognizer.save(train_data_location)
+# 训练函数
+# face_imag_path：训练的人脸图片文件夹位置
+# save_result_path： 训练结果模型路径
+def train(face_imag_path, save_result_path):
+    train_data_location = save_result_path
+    face_data_location = face_imag_path
+    imags_preprocess(face_data_location)
+    faces, Ids, infos = get_images_and_labels(face_data_location)
+    recognizer.train(faces, np.array(Ids))
+    recognizer.save(train_data_location)
 
-# write to file
-# with open("/train_data/data.json", "w") as file:
-#     json.dump(infos, file)
-file = open('/train_data/data.json', 'w')
-json.dump(infos, file)
-file.close()
-exit(0)
+    # write to file
+    os.chdir('./train_data')
+    with open("data.json", "w") as file:
+        json.dump(infos, file)
