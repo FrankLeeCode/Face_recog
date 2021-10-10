@@ -11,6 +11,14 @@ face_cascade = cv2.CascadeClassifier(face_xml_location)
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 
+def get_name(id):
+    # read from file
+    with open("data.json") as file:
+        info_list = json.load(file)
+
+    return info_list[id]
+
+
 def camera_face_recognize():
     camera = cv2.VideoCapture(0)
 
@@ -36,12 +44,9 @@ def camera_face_recognize():
 
 
 def photo_face_recognize(path):
-    # read from file
-    with open("data.json") as file:
-        info_list = json.load(file)
-
     for image_path in os.listdir(path):
-        if os.path.split(image_path)[-1].split(".")[-1] != 'JPG':
+        # 忽略掉非.jpg文件
+        if os.path.split(image_path)[-1].split(".")[-1] != 'jpg':
             continue
 
         img = cv2.imread(os.path.join(path, image_path))
@@ -49,10 +54,11 @@ def photo_face_recognize(path):
         faces = face_cascade.detectMultiScale(grey, 1.2, 5)
         for (x, y, w, h) in faces:
             img_id, conf = recognizer.predict(grey[y:y + h, x:x + w])
-            str_out1 = 'name: ' + info_list[img_id][0] + ' age: ' + info_list[img_id][1]
+            # str_out1 = 'name: ' + get_name(img_id)
+            str_out1 = 'name: JA'
             str_out2 = 'with conf: ' + str(round(conf, 2))
-            cv2.putText(img, str_out1, (10, y + h), font, 1, (21, 38, 56)[::-1], 3)
-            cv2.putText(img, str_out2, (10, y + h + 25), font, 1, (21, 38, 56)[::-1], 3)
+            cv2.putText(img, str_out1, (10, y + h), font, 1, (255, 255, 255)[::-1], 3)
+            cv2.putText(img, str_out2, (10, y + h + 25), font, 1, (255, 255, 255)[::-1], 3)
             pic_save_location = os.path.join('.', 'result', image_path)
             cv2.imwrite(pic_save_location, img)
 
