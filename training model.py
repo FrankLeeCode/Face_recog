@@ -9,12 +9,13 @@ detector = cv2.CascadeClassifier(face_xml_location)
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 
 
+# 更改其他类型图像文件成jpg
 def imags_preprocess(file_path):
     for image_path in os.listdir(file_path):
         file_split = os.path.split(image_path)[-1].split(".")
         if file_split[-1] != 'jpg':
             if file_split[-1] == 'JPG' or file_split[-1] == 'png':
-                os.rename(image_path, file_split[0] + '.jpg')
+                os.rename(os.path.join(file_path, image_path), os.path.join(file_path, file_split[0] + '.jpg'))
 
 
 def get_images_and_labels(path):
@@ -39,29 +40,31 @@ def get_images_and_labels(path):
         image_name = os.path.split(image_path)[-1].split('.')[0]
 
         # 给图片分配id标签
-        if face_name != image_name.split('_')[0]:
-            id = id + 1
+        face_name = image_name.split('_')[0]
+        if not (face_name in info_list):
             face_name = image_name.split('_')[0]
+            id = id + 1
             # 记录这个人的姓名和id号
             info_list.append(face_name)
 
-
         for (x, y, w, h) in faces:
             face_samples.append(image_np[y:y + h, x:x + w])
-            ids.append(id)
+            ids.append(info_list.index(face_name))
 
     return face_samples, ids, info_list
 
 
 train_data_location = os.path.join('.', 'train_data', 'train.yml')
 face_data_location = os.path.join('.', 'training_pic')
+imags_preprocess(face_data_location)
 faces, Ids, infos = get_images_and_labels(face_data_location)
 recognizer.train(faces, np.array(Ids))
 recognizer.save(train_data_location)
 
 # write to file
-with open("data.json", "w") as file:
-    json.dump(infos, file)
-
-
+# with open("/train_data/data.json", "w") as file:
+#     json.dump(infos, file)
+file = open('/train_data/data.json', 'w')
+json.dump(infos, file)
+file.close()
 exit(0)

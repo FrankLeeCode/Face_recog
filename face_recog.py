@@ -15,7 +15,6 @@ def get_name(id):
     # read from file
     with open("data.json") as file:
         info_list = json.load(file)
-
     return info_list[id]
 
 
@@ -54,8 +53,8 @@ def photo_face_recognize(path):
         faces = face_cascade.detectMultiScale(grey, 1.2, 5)
         for (x, y, w, h) in faces:
             img_id, conf = recognizer.predict(grey[y:y + h, x:x + w])
-            # str_out1 = 'name: ' + get_name(img_id)
-            str_out1 = 'name: JA'
+            str_out1 = 'name: ' + get_name(img_id)
+            # str_out1 = 'name: JA'
             str_out2 = 'with conf: ' + str(round(conf, 2))
             cv2.putText(img, str_out1, (10, y + h), font, 1, (255, 255, 255)[::-1], 3)
             cv2.putText(img, str_out2, (10, y + h + 25), font, 1, (255, 255, 255)[::-1], 3)
