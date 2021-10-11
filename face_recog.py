@@ -68,4 +68,3 @@ def face_recog(face_recog_path='./recog_pic' ,module_path='./train_data'):
     train_data_location = os.path.join(module_path, 'train.yml')
     recognizer.read(train_data_location)
     photo_face_recognize(face_recog_path, os.path.join(module_path, 'data.json'))
-    exit(0)
