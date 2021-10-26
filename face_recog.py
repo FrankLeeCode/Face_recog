@@ -64,7 +64,8 @@ def photo_face_recognize(path, infopath):
 # 人脸识别函数
 # face_recog_path：需要识别的图片文件文件夹路径
 # module_path：训练的识别模型文件夹路径
-def face_recog(face_recog_path='./recog_pic' ,module_path='./train_data'):
+def face_recog(face_recog_path='./recog_pic', module_path='./train_data'):
     train_data_location = os.path.join(module_path, 'train.yml')
+    print(train_data_location)
     recognizer.read(train_data_location)
     photo_face_recognize(face_recog_path, os.path.join(module_path, 'data.json'))
